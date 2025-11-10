@@ -10,9 +10,9 @@
       }
     ],
     [
-      "@semantic-release/npm",
+      "@semantic-release/exec",
       {
-        "pkgRoot": "dist/connectome"
+        "prepareCmd": "node ./scripts/semver/write-version.mjs ${nextRelease.version}"
       }
     ],
     [
