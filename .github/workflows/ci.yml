@@ -26,9 +26,10 @@ jobs:
         run: npm run lint
 
       - name: Test
-        run: npm run test -- --watch=false
         env:
+          CHROME_BIN: google-chrome
           CI: true
+        run: npm run test
 
       - name: Build library
         run: npm run build:lib

@@ -7,7 +7,7 @@
     "build": "ng build",
     "build:lib": "ng build connectome",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
+    "test": "ng test --watch=false --browsers=ChromeHeadless",
     "lint": "cross-env ESLINT_USE_FLAT_CONFIG=false eslint . --ext .ts,.html",
     "format": "prettier --write .",
     "release": "semantic-release",
