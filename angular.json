@@ -10,7 +10,7 @@
       "projectType": "library",
       "root": "projects/connectome",
       "sourceRoot": "projects/connectome/src",
-      "prefix": "nvl",
+      "prefix": "ncx",
       "architect": {
         "build": {
           "builder": "@angular/build:ng-packagr",
@@ -47,9 +47,7 @@
           "builder": "@angular/build:application",
           "options": {
             "browser": "projects/connectome-demo/src/main.ts",
-            "polyfills": [
-              "zone.js"
-            ],
+            "polyfills": ["zone.js"],
             "tsConfig": "projects/connectome-demo/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
@@ -58,9 +56,7 @@
                 "input": "projects/connectome-demo/public"
               }
             ],
-            "styles": [
-              "projects/connectome-demo/src/styles.scss"
-            ]
+            "styles": ["projects/connectome-demo/src/styles.scss"]
           },
           "configurations": {
             "production": {
@@ -104,10 +100,7 @@
         "test": {
           "builder": "@angular/build:karma",
           "options": {
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ],
+            "polyfills": ["zone.js", "zone.js/testing"],
             "tsConfig": "projects/connectome-demo/tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
             "assets": [
@@ -116,9 +109,7 @@
                 "input": "projects/connectome-demo/public"
               }
             ],
-            "styles": [
-              "projects/connectome-demo/src/styles.scss"
-            ]
+            "styles": ["projects/connectome-demo/src/styles.scss"]
           }
         }
       }

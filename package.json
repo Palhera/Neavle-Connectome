@@ -5,20 +5,13 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:lib": "ng build connectome",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
-  },
-  "prettier": {
-    "printWidth": 100,
-    "singleQuote": true,
-    "overrides": [
-      {
-        "files": "*.html",
-        "options": {
-          "parser": "angular"
-        }
-      }
-    ]
+    "test": "ng test",
+    "lint": "cross-env ESLINT_USE_FLAT_CONFIG=false eslint . --ext .ts,.html",
+    "format": "prettier --write .",
+    "release": "semantic-release",
+    "prepare": "husky install"
   },
   "private": true,
   "dependencies": {
@@ -28,15 +21,33 @@
     "@angular/forms": "^20.2.0",
     "@angular/platform-browser": "^20.2.0",
     "@angular/router": "^20.2.0",
+    "gl-matrix": "^3.4.3",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
+    "@angular-eslint/builder": "^20.6.0",
+    "@angular-eslint/eslint-plugin": "^20.6.0",
+    "@angular-eslint/eslint-plugin-template": "^20.6.0",
+    "@angular-eslint/template-parser": "^20.6.0",
     "@angular/build": "^20.3.9",
     "@angular/cli": "^20.2.1",
     "@angular/compiler-cli": "^20.2.0",
+    "@commitlint/cli": "^20.1.0",
+    "@commitlint/config-conventional": "^20.0.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^13.0.1",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^11.0.6",
+    "@semantic-release/npm": "^12.0.2",
+    "@semantic-release/release-notes-generator": "^14.1.0",
     "@types/jasmine": "~5.1.0",
+    "@typescript-eslint/eslint-plugin": "^8.46.3",
+    "@typescript-eslint/parser": "^8.46.3",
+    "cross-env": "^10.1.0",
+    "eslint": "^8.57.1",
+    "husky": "^9.1.7",
     "jasmine-core": "~5.9.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
@@ -44,6 +55,8 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "ng-packagr": "^20.3.0",
+    "prettier": "^3.6.2",
+    "semantic-release": "^24.2.9",
     "typescript": "~5.9.2"
   }
 }

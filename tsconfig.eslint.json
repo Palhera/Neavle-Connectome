@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "useDefineForClassFields": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "paths": {
+      "@neavle/connectome": ["./projects/connectome/src/public-api.ts"],
+      "@neavle/connectome/*": ["./projects/connectome/src/*"]
+    }
+  },
+  "include": ["projects/**/*.ts", "*.ts"],
+  "exclude": ["dist", "out-tsc", "node_modules"]
+}

@@ -1,11 +1,16 @@
 {
   "name": "@neavle/connectome",
   "version": "0.0.1",
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
   "peerDependencies": {
-    "@angular/common": "^20.3.0",
-    "@angular/core": "^20.3.0"
+    "@angular/common": ">=20.0.0",
+    "@angular/core": ">=20.0.0"
   },
   "dependencies": {
+    "gl-matrix": "^3.4.3",
     "tslib": "^2.3.0"
   },
   "sideEffects": false

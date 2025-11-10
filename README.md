@@ -1,59 +1,32 @@
-# NeavleConnectome
+# Neavle Connectome
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.2.1.
+@neavle/connectome is an Angular-first WebGL2 rendering engine built for exploring massive graphs in 2D and 3D. It powers immersive network visualizations with smooth interactions even when thousands of nodes, connections, and annotations are on screen.
 
-## Development server
+## Key features
 
-To start a local development server, run:
+- Real-time WebGL2 renderer tuned for tens of thousands of nodes and edges
+- 2D/3D scene graph with camera controls, selection helpers, and GPU-accelerated layouts
+- Angular standalone components that drop into any Angular 20+ workspace
+- Extensible data model plus utility APIs for streaming updates and custom shaders
 
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Installation
 
 ```bash
-ng generate component component-name
+npm install @neavle/connectome
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Peer dependencies: make sure your host application provides `@angular/core` and `@angular/common` at version `>= 20.0.0`.
+
+## Monorepo layout
+
+- `projects/connectome`: the publishable Angular library (`ng build connectome`)
+- `projects/connectome-demo`: a demo application showcasing live graph rendering
+
+To explore the demo locally:
 
 ```bash
-ng generate --help
+npm install
+npm run start
 ```
 
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+The demo runs at http://localhost:4200 and consumes the local library build.

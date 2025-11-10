@@ -8,9 +8,8 @@ describe('Connectome', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Connectome]
-    })
-    .compileComponents();
+      imports: [Connectome],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(Connectome);
     component = fixture.componentInstance;
