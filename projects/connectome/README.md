@@ -41,6 +41,15 @@ Once the project is built, you can publish your library by following these steps
    npm publish
    ```
 
+## Bootstrap Canvas
+
+```ts
+import { ConnectomeCanvasComponent } from '@neavle/connectome';
+
+// In a standalone component template:
+// <ncx-connectome-canvas [background]="[0.05, 0.05, 0.07, 1]"></ncx-connectome-canvas>
+```
+
 ## Running unit tests
 
 To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:

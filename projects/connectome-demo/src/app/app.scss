@@ -1,0 +1,58 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  padding: 2rem;
+  background: radial-gradient(circle at top, #111524 0%, #050608 65%);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  color: #e5e9ff;
+}
+
+.demo-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.demo-card {
+  padding: 1.5rem;
+  border-radius: 1rem;
+  background: rgba(15, 18, 34, 0.85);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+
+  header {
+    margin-bottom: 1rem;
+  }
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.75rem;
+  color: #6f7fff;
+  margin: 0;
+}
+
+h2 {
+  margin: 0.25rem 0 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.canvas-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.demo-canvas {
+  flex: 1;
+  min-height: 280px;
+  max-height: 480px;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+router-outlet {
+  display: none;
+}

@@ -1,2 +1,22 @@
-<ncx-connectome></ncx-connectome>
+<section class="demo-grid">
+  <article class="demo-card">
+    <header>
+      <p class="eyebrow">Graph UI</p>
+      <h2>Connectome component</h2>
+    </header>
+    <ncx-connectome></ncx-connectome>
+  </article>
+
+  <article class="demo-card canvas-card">
+    <header>
+      <p class="eyebrow">WebGL2 foundation</p>
+      <h2>Connectome Canvas</h2>
+    </header>
+    <ncx-connectome-canvas
+      class="demo-canvas"
+      [background]="canvasBackground"
+    ></ncx-connectome-canvas>
+  </article>
+</section>
+
 <router-outlet />
