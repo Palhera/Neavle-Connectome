@@ -1,3 +1,11 @@
+# [1.6.0](https://github.com/Palhera/Neavle-Connectome/compare/v1.5.0...v1.6.0) (2025-11-11)
+
+
+### Features
+
+* **scene:** wire scene + animation tick into canvas and renderer ([db44f7b](https://github.com/Palhera/Neavle-Connectome/commit/db44f7bf3015edacf90ad72818204cc2917fe62c))
+* **scene:** wire scene + animation tick into canvas and renderer ([5483b05](https://github.com/Palhera/Neavle-Connectome/commit/5483b052b2a821050eb87ea53ccbbddc8903f180))
+
 # [1.5.0](https://github.com/Palhera/Neavle-Connectome/compare/v1.4.0...v1.5.0) (2025-11-11)
 
 ### Features
