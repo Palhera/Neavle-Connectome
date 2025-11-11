@@ -4,3 +4,4 @@
 
 export * from './lib/components/components.public-api';
 export * from './lib/models/models.public-api';
+export * from './lib/render/connectome-renderer.service';

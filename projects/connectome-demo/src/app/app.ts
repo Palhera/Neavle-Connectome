@@ -17,10 +17,10 @@ export class App {
   protected readonly title = signal('connectome-demo');
 
   nodes: ConnectomeNode[] = [
-    { id: 'a', label: 'Alpha' },
-    { id: 'b', label: 'Beta' },
-    { id: 'c', label: 'Gamma' },
-    { id: 'd', label: 'Delta' },
+    { id: 'a', x: -12, y: 12 },
+    { id: 'b', x: 12, y: 12 },
+    { id: 'c', x: -12, y: -12 },
+    { id: 'd', x: 12, y: -12 },
   ];
   edges: ConnectomeEdge[] = [
     { source: 'a', target: 'b' },

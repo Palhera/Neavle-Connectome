@@ -12,8 +12,18 @@ import {
   ViewChild,
   inject,
 } from '@angular/core';
+import { ConnectomeRenderer } from '../../render/connectome-renderer.service';
+import { ConnectomeData, Dimensionality } from '../../api/types';
 
 type Vec4 = [number, number, number, number];
+
+const createIdentity = (): Float32Array =>
+  new Float32Array([
+    1, 0, 0, 0, //
+    0, 1, 0, 0, //
+    0, 0, 1, 0, //
+    0, 0, 0, 1,
+  ]);
 
 @Component({
   selector: 'ncx-connectome-canvas',
@@ -69,21 +79,27 @@ export class ConnectomeCanvasComponent implements AfterViewInit, OnChanges, OnDe
   @Input()
   background: Vec4 = [0.08, 0.08, 0.09, 1];
 
+  @Input()
+  data?: ConnectomeData;
+
+  @Input()
+  dimensionality: Dimensionality = 2;
+
   protected _ariaStatus = 'Canvas ready';
 
+  private readonly renderer = inject(ConnectomeRenderer);
   private readonly zone = inject(NgZone);
+
   private _gl: WebGL2RenderingContext | null = null;
   private _ro: ResizeObserver | null = null;
   private _rafId: number | null = null;
   private _zoom = 1;
   private _canvasWidth = 0;
   private _canvasHeight = 0;
-  private _vao: WebGLVertexArrayObject | null = null;
-  private _program: WebGLProgram | null = null;
-  private _vertexShader: WebGLShader | null = null;
-  private _fragmentShader: WebGLShader | null = null;
-  private _vertexBuffer: WebGLBuffer | null = null;
-  private _scaleUniform: WebGLUniformLocation | null = null;
+  private _pendingDataUpdate = false;
+
+  private readonly _viewMatrix = createIdentity();
+  private readonly _projMatrix = createIdentity();
 
   private readonly _renderFrame = () => {
     this._rafId = null;
@@ -93,6 +109,8 @@ export class ConnectomeCanvasComponent implements AfterViewInit, OnChanges, OnDe
   private readonly _contextLostHandler = (event: Event) => {
     event.preventDefault();
     this.stopRenderLoop();
+    this.renderer.dispose();
+    this._gl = null;
   };
 
   private readonly _contextRestoredHandler = () => {
@@ -110,13 +128,24 @@ export class ConnectomeCanvasComponent implements AfterViewInit, OnChanges, OnDe
   ngOnDestroy(): void {
     this.stopRenderLoop();
     this.disconnectResizeObserver();
-    this.releaseGlResources();
+    this.renderer.dispose();
     this.removeContextListeners();
+    this._gl = null;
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['background'] && !changes['background'].firstChange) {
       this.requestRender();
+    }
+
+    if (changes['data']) {
+      this._pendingDataUpdate = true;
+      this.pushDataToRenderer();
+    }
+
+    if (changes['dimensionality'] && !changes['dimensionality'].firstChange && this._gl) {
+      this.renderer.init(this._gl, this.dimensionality);
+      this.pushDataToRenderer(true);
     }
   }
 
@@ -133,6 +162,7 @@ export class ConnectomeCanvasComponent implements AfterViewInit, OnChanges, OnDe
 
   public resetView(): void {
     this._zoom = 1;
+    this.updateViewMatrix();
     this._ariaStatus = 'Zoom 100%';
     this.requestRender();
   }
@@ -152,7 +182,7 @@ export class ConnectomeCanvasComponent implements AfterViewInit, OnChanges, OnDe
       return;
     }
 
-    this.releaseGlResources();
+    this.renderer.dispose();
     this.disconnectResizeObserver();
     this.removeContextListeners();
     this.addContextListeners();
@@ -172,65 +202,23 @@ export class ConnectomeCanvasComponent implements AfterViewInit, OnChanges, OnDe
     }
 
     this._gl = ctx;
-    this.setupPipeline(ctx);
+    this.renderer.init(ctx, this.dimensionality);
     this.observeCanvasSize(canvas);
+    this.pushDataToRenderer(true);
     this.requestRender();
   }
 
-  private setupPipeline(gl: WebGL2RenderingContext): void {
-    const vertexSource = `#version 300 es
-precision highp float;
-in vec2 a_position;
-uniform float u_scale;
-void main() {
-  vec2 scaled = a_position * u_scale;
-  gl_Position = vec4(scaled, 0.0, 1.0);
-}`;
-
-    const fragmentSource = `#version 300 es
-precision highp float;
-out vec4 outColor;
-void main() {
-  outColor = vec4(0.7, 0.8, 0.95, 1.0);
-}`;
-
-    this._vertexShader = this.compileShader(gl, gl.VERTEX_SHADER, vertexSource);
-    this._fragmentShader = this.compileShader(gl, gl.FRAGMENT_SHADER, fragmentSource);
-    this._program = this.linkProgram(gl, this._vertexShader, this._fragmentShader);
-
-    const scaleUniform: WebGLUniformLocation | null = gl.getUniformLocation(
-      this._program,
-      'u_scale',
-    );
-    if (!scaleUniform) {
-      throw new Error('Failed to locate u_scale uniform.');
+  private pushDataToRenderer(force = false): void {
+    if (!this._gl) {
+      return;
     }
-    this._scaleUniform = scaleUniform;
-
-    this._vao = gl.createVertexArray();
-    if (!this._vao) {
-      throw new Error('Failed to create vertex array.');
+    if (!this._pendingDataUpdate && !force) {
+      return;
     }
-    gl.bindVertexArray(this._vao);
-
-    this._vertexBuffer = gl.createBuffer();
-    if (!this._vertexBuffer) {
-      throw new Error('Failed to create vertex buffer.');
-    }
-    gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
-    const triangleVertices = new Float32Array([0, 0.6, -0.5, -0.3, 0.5, -0.3]);
-    gl.bufferData(gl.ARRAY_BUFFER, triangleVertices, gl.STATIC_DRAW);
-
-    const positionLocation: number = gl.getAttribLocation(this._program, 'a_position');
-    if (positionLocation === -1) {
-      throw new Error('Failed to locate a_position attribute.');
-    }
-
-    gl.enableVertexAttribArray(positionLocation);
-    gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
-
-    gl.bindVertexArray(null);
-    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+    const payload: ConnectomeData = this.data ?? { nodes: [] };
+    this.renderer.setData(payload);
+    this._pendingDataUpdate = false;
+    this.requestRender();
   }
 
   private observeCanvasSize(canvas: HTMLCanvasElement): void {
@@ -281,7 +269,7 @@ void main() {
 
   private drawFrame(): void {
     const gl = this._gl;
-    if (!gl || !this._program || !this._vao || !this._scaleUniform) {
+    if (!gl) {
       return;
     }
 
@@ -290,48 +278,7 @@ void main() {
     gl.clearColor(bg[0], bg[1], bg[2], bg[3]);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    gl.useProgram(this._program);
-    gl.bindVertexArray(this._vao);
-    gl.uniform1f(this._scaleUniform, this._zoom);
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
-    gl.bindVertexArray(null);
-  }
-
-  private compileShader(gl: WebGL2RenderingContext, type: number, source: string): WebGLShader {
-    const shader = gl.createShader(type);
-    if (!shader) {
-      throw new Error('Unable to allocate shader.');
-    }
-    gl.shaderSource(shader, source);
-    gl.compileShader(shader);
-    const compiled = gl.getShaderParameter(shader, gl.COMPILE_STATUS) as boolean;
-    if (!compiled) {
-      const log = gl.getShaderInfoLog(shader) ?? 'Unknown shader error.';
-      gl.deleteShader(shader);
-      throw new Error(`Shader compilation failed: ${log}`);
-    }
-    return shader;
-  }
-
-  private linkProgram(
-    gl: WebGL2RenderingContext,
-    vertex: WebGLShader,
-    fragment: WebGLShader,
-  ): WebGLProgram {
-    const program = gl.createProgram();
-    if (!program) {
-      throw new Error('Unable to allocate program.');
-    }
-    gl.attachShader(program, vertex);
-    gl.attachShader(program, fragment);
-    gl.linkProgram(program);
-    const linked = gl.getProgramParameter(program, gl.LINK_STATUS) as boolean;
-    if (!linked) {
-      const log = gl.getProgramInfoLog(program) ?? 'Unknown program error.';
-      gl.deleteProgram(program);
-      throw new Error(`Program linking failed: ${log}`);
-    }
-    return program;
+    this.renderer.draw(this._viewMatrix, this._projMatrix);
   }
 
   private adjustZoom(delta: number): void {
@@ -340,8 +287,15 @@ void main() {
       return;
     }
     this._zoom = nextZoom;
+    this.updateViewMatrix();
     this._ariaStatus = `Zoom ${(this._zoom * 100).toFixed(0)}%`;
     this.requestRender();
+  }
+
+  private updateViewMatrix(): void {
+    this._viewMatrix[0] = this._zoom;
+    this._viewMatrix[5] = this._zoom;
+    this._viewMatrix[10] = this._zoom;
   }
 
   private stopRenderLoop(): void {
@@ -354,37 +308,6 @@ void main() {
   private disconnectResizeObserver(): void {
     this._ro?.disconnect();
     this._ro = null;
-  }
-
-  private releaseGlResources(): void {
-    const gl = this._gl;
-    if (!gl) {
-      return;
-    }
-
-    if (this._vao) {
-      gl.deleteVertexArray(this._vao);
-      this._vao = null;
-    }
-    if (this._vertexBuffer) {
-      gl.deleteBuffer(this._vertexBuffer);
-      this._vertexBuffer = null;
-    }
-    if (this._program) {
-      gl.deleteProgram(this._program);
-      this._program = null;
-    }
-    if (this._vertexShader) {
-      gl.deleteShader(this._vertexShader);
-      this._vertexShader = null;
-    }
-    if (this._fragmentShader) {
-      gl.deleteShader(this._fragmentShader);
-      this._fragmentShader = null;
-    }
-
-    this._scaleUniform = null;
-    this._gl = null;
   }
 
   private addContextListeners(): void {
