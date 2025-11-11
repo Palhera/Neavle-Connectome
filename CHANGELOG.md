@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/Palhera/Neavle-Connectome/compare/v1.4.0...v1.5.0) (2025-11-11)
+
+
+### Features
+
+* **render:** renderer can bind ConnectomeScene and stream instance updates ([a61ec25](https://github.com/Palhera/Neavle-Connectome/commit/a61ec2579197ebf15956150c36ddfc0511351255))
+
 # [1.4.0](https://github.com/Palhera/Neavle-Connectome/compare/v1.3.0...v1.4.0) (2025-11-11)
 
 
