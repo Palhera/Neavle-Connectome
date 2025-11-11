@@ -1,3 +1,10 @@
+## [1.6.1](https://github.com/Palhera/Neavle-Connectome/compare/v1.6.0...v1.6.1) (2025-11-11)
+
+
+### Bug Fixes
+
+* fix changes ([7e46012](https://github.com/Palhera/Neavle-Connectome/commit/7e4601274cac48eb04fa0218dac7a2a2f771e211))
+
 # [1.6.0](https://github.com/Palhera/Neavle-Connectome/compare/v1.5.0...v1.6.0) (2025-11-11)
 
 
