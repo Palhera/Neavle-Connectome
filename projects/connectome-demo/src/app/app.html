@@ -6,7 +6,10 @@
     </header>
     <ul class="feature-list">
       <li>⚡ Instanced WebGL2 rendering for nodes + links with packed colors and weights.</li>
-      <li>🧭 Camera controls for both 2D (pan/zoom) and 3D (orbit/dolly/pan) with mouse, wheel, and keys.</li>
+      <li>
+        🧭 Camera controls for both 2D (pan/zoom) and 3D (orbit/dolly/pan) with mouse, wheel, and
+        keys.
+      </li>
       <li>♿ Live aria announcements so assistive tech hears zoom/distance changes.</li>
       <li>🧱 Strong data contracts + runtime guards to validate your payloads.</li>
       <li>🧪 Dedicated smoke tests for the renderer, cameras, and Angular component.</li>
@@ -24,18 +27,10 @@
         <h2>GPU topology preview</h2>
       </div>
       <div class="dimension-toggle" role="group" aria-label="Dimensionality toggle">
-        <button
-          type="button"
-          [class.active]="dimensionality === 2"
-          (click)="setDimensionality(2)"
-        >
+        <button type="button" [class.active]="dimensionality === 2" (click)="setDimensionality(2)">
           2D
         </button>
-        <button
-          type="button"
-          [class.active]="dimensionality === 3"
-          (click)="setDimensionality(3)"
-        >
+        <button type="button" [class.active]="dimensionality === 3" (click)="setDimensionality(3)">
           3D
         </button>
       </div>
@@ -43,7 +38,9 @@
 
     <div class="status-panel">
       <span class="status-value">{{ viewStatus }}</span>
-      <span class="status-hint">Scroll to zoom/dolly · Drag to pan/orbit · Arrow keys for nudges</span>
+      <span class="status-hint"
+        >Scroll to zoom/dolly · Drag to pan/orbit · Arrow keys for nudges</span
+      >
     </div>
 
     <div class="actions-row">

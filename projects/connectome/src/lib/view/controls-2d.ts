@@ -135,7 +135,11 @@ export class Controls2D {
     return true;
   }
 
-  private pointerToWorld(offsetX: number, offsetY: number, viewport: Viewport): {
+  private pointerToWorld(
+    offsetX: number,
+    offsetY: number,
+    viewport: Viewport,
+  ): {
     worldX: number;
     worldY: number;
   } {

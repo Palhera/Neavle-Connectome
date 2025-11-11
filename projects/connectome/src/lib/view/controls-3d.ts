@@ -143,7 +143,11 @@ export class Controls3D {
     return true;
   }
 
-  private screenDeltaToWorld(dxCss: number, dyCss: number, viewport: Viewport): {
+  private screenDeltaToWorld(
+    dxCss: number,
+    dyCss: number,
+    viewport: Viewport,
+  ): {
     worldDx: number;
     worldDy: number;
   } {

@@ -1,7 +1,7 @@
 import { mat4, vec3 } from 'gl-matrix';
 
-const MIN_ELEVATION = (-Math.PI / 2) + 0.01;
-const MAX_ELEVATION = (Math.PI / 2) - 0.01;
+const MIN_ELEVATION = -Math.PI / 2 + 0.01;
+const MAX_ELEVATION = Math.PI / 2 - 0.01;
 const WORLD_UP = vec3.fromValues(0, 1, 0);
 
 export class Camera3D {
