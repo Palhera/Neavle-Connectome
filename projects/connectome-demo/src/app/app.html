@@ -1,62 +1,16 @@
-<section class="demo-grid">
-  <article class="demo-card info-card">
-    <header>
-      <p class="eyebrow">Connectome toolkit</p>
-      <h2>What you get out of the box</h2>
-    </header>
-    <ul class="feature-list">
-      <li>⚡ Instanced WebGL2 rendering for nodes + links with packed colors and weights.</li>
-      <li>
-        🧭 Camera controls for both 2D (pan/zoom) and 3D (orbit/dolly/pan) with mouse, wheel, and
-        keys.
-      </li>
-      <li>♿ Live aria announcements so assistive tech hears zoom/distance changes.</li>
-      <li>🧱 Strong data contracts + runtime guards to validate your payloads.</li>
-      <li>🧪 Dedicated smoke tests for the renderer, cameras, and Angular component.</li>
-    </ul>
-    <div class="mini-preview">
-      <p class="eyebrow">Standalone Angular component</p>
-      <ncx-connectome></ncx-connectome>
-    </div>
-  </article>
+<section class="demo">
+  <ncx-connectome-canvas
+    class="canvas"
+    [background]="canvasBackground"
+    [data]="canvasData"
+    aria-label="Interactive Connectome scene"
+  ></ncx-connectome-canvas>
 
-  <article class="demo-card canvas-card">
-    <header class="canvas-header">
-      <div>
-        <p class="eyebrow">Explorable canvas</p>
-        <h2>GPU topology preview</h2>
-      </div>
-      <div class="dimension-toggle" role="group" aria-label="Dimensionality toggle">
-        <button type="button" [class.active]="dimensionality === 2" (click)="setDimensionality(2)">
-          2D
-        </button>
-        <button type="button" [class.active]="dimensionality === 3" (click)="setDimensionality(3)">
-          3D
-        </button>
-      </div>
-    </header>
-
-    <div class="status-panel">
-      <span class="status-value">{{ viewStatus }}</span>
-      <span class="status-hint"
-        >Scroll to zoom/dolly · Drag to pan/orbit · Arrow keys for nudges</span
-      >
-    </div>
-
-    <div class="actions-row">
-      <button type="button" (click)="focusGraph()">Focus graph</button>
-      <button type="button" (click)="resetCamera()">Reset camera</button>
-    </div>
-
-    <ncx-connectome-canvas
-      #canvasRef
-      class="demo-canvas"
-      [background]="canvasBackground"
-      [data]="canvasData"
-      [dimensionality]="dimensionality"
-      (viewChanged)="handleViewChanged($event)"
-    ></ncx-connectome-canvas>
-  </article>
+  <aside>
+    <h3>Live Scene</h3>
+    <p>Nodes: {{ scene.nodes.size }}</p>
+    <p>Links: {{ scene.links.size }}</p>
+    <p>Tick: {{ tick }}</p>
+    <p><small>Nodes move, fade, and spawn dynamically.</small></p>
+  </aside>
 </section>
-
-<router-outlet />
