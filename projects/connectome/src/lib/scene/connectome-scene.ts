@@ -254,7 +254,11 @@ export class ConnectomeScene {
     return dirty;
   }
 
-  private lerpColor(current: number, target: number, amount: number): { value: number; changed: boolean } {
+  private lerpColor(
+    current: number,
+    target: number,
+    amount: number,
+  ): { value: number; changed: boolean } {
     if (current === target) {
       return { value: current >>> 0, changed: false };
     }
