@@ -1,3 +1,11 @@
+# [1.4.0](https://github.com/Palhera/Neavle-Connectome/compare/v1.3.0...v1.4.0) (2025-11-11)
+
+
+### Features
+
+* **scene:** add ConnectomeScene with incremental updates and animation ([4e67d59](https://github.com/Palhera/Neavle-Connectome/commit/4e67d594233afdad12f058b3216725559e934594))
+* **scene:** add ConnectomeScene with incremental updates and animation ([05317c4](https://github.com/Palhera/Neavle-Connectome/commit/05317c4c97babe6bd82d7bd91b6628d9321a5a07))
+
 # [1.3.0](https://github.com/Palhera/Neavle-Connectome/compare/v1.2.0...v1.3.0) (2025-11-11)
 
 
