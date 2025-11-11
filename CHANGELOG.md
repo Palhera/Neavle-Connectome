@@ -1,10 +1,9 @@
 # [1.2.0](https://github.com/Palhera/Neavle-Connectome/compare/v1.1.0...v1.2.0) (2025-11-11)
 
-
 ### Features
 
-* **view:** add 2D/3D cameras and controls with a11y updates and wire to renderer ([6f01b29](https://github.com/Palhera/Neavle-Connectome/commit/6f01b2969412a6c84b3c2eb9816ec6c0f9541b98))
-* **view:** add 2D/3D cameras and controls with a11y updates and wire to renderer ([8b61ce8](https://github.com/Palhera/Neavle-Connectome/commit/8b61ce8a63ea1589f20f8ef5fced544e4b67b3ab))
+- **view:** add 2D/3D cameras and controls with a11y updates and wire to renderer ([6f01b29](https://github.com/Palhera/Neavle-Connectome/commit/6f01b2969412a6c84b3c2eb9816ec6c0f9541b98))
+- **view:** add 2D/3D cameras and controls with a11y updates and wire to renderer ([8b61ce8](https://github.com/Palhera/Neavle-Connectome/commit/8b61ce8a63ea1589f20f8ef5fced544e4b67b3ab))
 
 # [1.1.0](https://github.com/Palhera/Neavle-Connectome/compare/v1.0.1...v1.1.0) (2025-11-11)
 
