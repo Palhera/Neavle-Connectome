@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ConnectomeData, ConnectomeLink, ConnectomeNode, Dimensionality } from '../api/types';
+import { ConnectomeScene, SceneLink, SceneNode } from '../scene/connectome-scene';
 import { linksFragmentShader } from '../shaders/links.frag';
 import { linksVertexShader } from '../shaders/links.vert';
 import { nodesFragmentShader } from '../shaders/nodes.frag';
@@ -12,6 +13,8 @@ import { compileProgram } from '../shaders/util';
 export class ConnectomeRenderer {
   private gl: WebGL2RenderingContext | null = null;
   private dimensionality: Dimensionality = 2;
+  private _scene: ConnectomeScene | null = null;
+  private _needsUpload = false;
 
   private nodeProgram: WebGLProgram | null = null;
   private nodeUniforms: { view: WebGLUniformLocation | null; proj: WebGLUniformLocation | null } = {
@@ -45,6 +48,8 @@ export class ConnectomeRenderer {
   private readonly LINK_INSTANCE_WORDS = 8;
   private readonly DEFAULT_NODE_COLOR = 0xffffffff;
   private readonly DEFAULT_LINK_COLOR = 0x88ffffff;
+  private _nodeBufferBytes = 0;
+  private _linkBufferBytes = 0;
 
   init(gl: WebGL2RenderingContext, dimensionality: Dimensionality): void {
     if (this.gl && this.gl !== gl) {
@@ -55,28 +60,52 @@ export class ConnectomeRenderer {
     this.buildPrograms();
   }
 
+  setScene(scene: ConnectomeScene): void {
+    this._scene = scene;
+    this._needsUpload = true;
+  }
+
   setData(data?: ConnectomeData): void {
     this.data = data;
-    if (!this.gl || !this.nodeInstanceBuffer || !this.linkInstanceBuffer) {
+    if (!data) {
+      this._scene = null;
+      this._needsUpload = true;
       return;
     }
-
-    const nodes = data?.nodes ?? [];
-    this.updateNodeInstances(nodes);
-    const links = data?.links ?? [];
-    this.updateLinkInstances(nodes, links);
+    const scene = new ConnectomeScene();
+    scene.update({
+      nodes: (data.nodes ?? []).map((node) => ({
+        id: node.id,
+        x: node.x ?? 0,
+        y: node.y ?? 0,
+        z: node.z ?? 0,
+        size: node.size ?? 0.5,
+        color: node.color ?? this.DEFAULT_NODE_COLOR,
+        visible: true,
+      })),
+      links: (data.links ?? []).map((link, index) => ({
+        id: link.id ?? index,
+        source: link.source,
+        target: link.target,
+        color: link.color ?? this.DEFAULT_LINK_COLOR,
+        visible: true,
+      })),
+    });
+    this.setScene(scene);
   }
 
   draw(view: Float32Array, proj: Float32Array): void {
     if (!this.gl) {
       return;
     }
+    this.uploadScene();
     this.drawNodes(view, proj);
     this.drawLinks(view, proj);
   }
 
   dispose(): void {
     this.releaseGlResources();
+    this._scene = null;
     this.gl = null;
   }
 
@@ -189,6 +218,33 @@ export class ConnectomeRenderer {
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
   }
 
+  private uploadScene(): void {
+    if (!this._scene || !this.gl) {
+      return;
+    }
+    const nodes = Array.from(this._scene.nodes.values());
+    const links = Array.from(this._scene.links.values());
+    this.nodeCount = nodes.length;
+    this.linkCount = links.length;
+
+    const nodeBytes = this.nodeCount * this.NODE_INSTANCE_WORDS * 4;
+    const linkBytes = this.linkCount * this.LINK_INSTANCE_WORDS * 4;
+
+    const nodeResized = this._needsUpload || nodeBytes !== this._nodeBufferBytes;
+    const linkResized = this._needsUpload || linkBytes !== this._linkBufferBytes;
+
+    if (nodeResized) {
+      this.ensureNodeCapacity(Math.max(1, this.nodeCount) * this.NODE_INSTANCE_WORDS);
+    }
+    if (linkResized) {
+      this.ensureLinkCapacity(Math.max(1, this.linkCount) * this.LINK_INSTANCE_WORDS);
+    }
+
+    this.updateSceneNodes(nodes, nodeBytes, nodeResized);
+    this.updateSceneLinks(links, linkBytes, linkResized);
+    this._needsUpload = false;
+  }
+
   private updateNodeInstances(nodes: ConnectomeNode[]): void {
     const gl = this.gl;
     if (!gl || !this.nodeInstanceBuffer) {
@@ -214,6 +270,38 @@ export class ConnectomeRenderer {
     gl.bufferData(gl.ARRAY_BUFFER, uploadBytes, gl.DYNAMIC_DRAW);
     if (this.nodeCount > 0) {
       gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.nodeInstanceByteView.subarray(0, uploadBytes));
+    }
+  }
+
+  private updateSceneNodes(nodes: SceneNode[], totalBytes: number, resized: boolean): void {
+    const gl = this.gl;
+    if (!gl || !this.nodeInstanceBuffer || nodes.length === 0) {
+      if (resized && gl && this.nodeInstanceBuffer) {
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.nodeInstanceBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, Math.max(4, totalBytes), gl.DYNAMIC_DRAW);
+        this._nodeBufferBytes = totalBytes;
+      }
+      return;
+    }
+    this.ensureNodeCapacity(Math.max(1, nodes.length) * this.NODE_INSTANCE_WORDS);
+    const floats = this.nodeInstanceFloatView;
+    const uints = this.nodeInstanceUintView;
+    for (let i = 0; i < nodes.length; i += 1) {
+      const node = nodes[i];
+      const base = i * this.NODE_INSTANCE_WORDS;
+      floats[base] = node.x;
+      floats[base + 1] = node.y;
+      floats[base + 2] = this.dimensionality === 3 ? node.z ?? 0 : 0;
+      floats[base + 3] = node.size;
+      uints[base + 4] = node.color >>> 0;
+    }
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.nodeInstanceBuffer);
+    if (resized || this._nodeBufferBytes !== totalBytes) {
+      gl.bufferData(gl.ARRAY_BUFFER, Math.max(4, totalBytes), gl.DYNAMIC_DRAW);
+      this._nodeBufferBytes = totalBytes;
+    }
+    if (totalBytes > 0) {
+      gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.nodeInstanceByteView.subarray(0, totalBytes));
     }
   }
 
@@ -258,6 +346,50 @@ export class ConnectomeRenderer {
     gl.bufferData(gl.ARRAY_BUFFER, uploadBytes, gl.DYNAMIC_DRAW);
     if (this.linkCount > 0) {
       gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.linkInstanceByteView.subarray(0, uploadBytes));
+    }
+  }
+
+  private updateSceneLinks(links: SceneLink[], totalBytes: number, resized: boolean): void {
+    const gl = this.gl;
+    if (!gl || !this.linkInstanceBuffer || !this._scene) {
+      if (resized && gl && this.linkInstanceBuffer) {
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.linkInstanceBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, Math.max(4, totalBytes), gl.DYNAMIC_DRAW);
+        this._linkBufferBytes = totalBytes;
+      }
+      return;
+    }
+    this.ensureLinkCapacity(Math.max(1, links.length) * this.LINK_INSTANCE_WORDS);
+    const floats = this.linkInstanceFloatView;
+    const uints = this.linkInstanceUintView;
+    const nodeLookup = this._scene.nodes;
+    for (let i = 0; i < links.length; i += 1) {
+      const link = links[i];
+      const sourceNode = nodeLookup.get(link.source);
+      const targetNode = nodeLookup.get(link.target);
+      const sx = sourceNode?.x ?? 0;
+      const sy = sourceNode?.y ?? 0;
+      const sz = this.dimensionality === 3 ? sourceNode?.z ?? 0 : 0;
+      const tx = targetNode?.x ?? 0;
+      const ty = targetNode?.y ?? 0;
+      const tz = this.dimensionality === 3 ? targetNode?.z ?? 0 : 0;
+      const base = i * this.LINK_INSTANCE_WORDS;
+      floats[base] = sx;
+      floats[base + 1] = sy;
+      floats[base + 2] = sz;
+      floats[base + 3] = tx;
+      floats[base + 4] = ty;
+      floats[base + 5] = tz;
+      floats[base + 6] = 1;
+      uints[base + 7] = link.color >>> 0;
+    }
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.linkInstanceBuffer);
+    if (resized || this._linkBufferBytes !== totalBytes) {
+      gl.bufferData(gl.ARRAY_BUFFER, Math.max(4, totalBytes), gl.DYNAMIC_DRAW);
+      this._linkBufferBytes = totalBytes;
+    }
+    if (totalBytes > 0) {
+      gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.linkInstanceByteView.subarray(0, totalBytes));
     }
   }
 
@@ -322,6 +454,8 @@ export class ConnectomeRenderer {
       this.linkProgram = null;
       this.nodeVao = null;
       this.linkVao = null;
+      this._nodeBufferBytes = 0;
+      this._linkBufferBytes = 0;
       return;
     }
     if (this.nodeVao) {
@@ -356,6 +490,8 @@ export class ConnectomeRenderer {
       gl.deleteProgram(this.linkProgram);
       this.linkProgram = null;
     }
+    this._nodeBufferBytes = 0;
+    this._linkBufferBytes = 0;
     this.nodeUniforms = { view: null, proj: null };
     this.linkUniforms = { view: null, proj: null };
     this.nodeCount = 0;

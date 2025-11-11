@@ -1,9 +1,8 @@
 # [1.3.0](https://github.com/Palhera/Neavle-Connectome/compare/v1.2.0...v1.3.0) (2025-11-11)
 
-
 ### Features
 
-* **interaction:** add GPU picking with demo showcase for hover/click ([243d4ea](https://github.com/Palhera/Neavle-Connectome/commit/243d4ead00024446bd90ca46843fd0bc20a0e70e))
+- **interaction:** add GPU picking with demo showcase for hover/click ([243d4ea](https://github.com/Palhera/Neavle-Connectome/commit/243d4ead00024446bd90ca46843fd0bc20a0e70e))
 
 # [1.2.0](https://github.com/Palhera/Neavle-Connectome/compare/v1.1.0...v1.2.0) (2025-11-11)
 
