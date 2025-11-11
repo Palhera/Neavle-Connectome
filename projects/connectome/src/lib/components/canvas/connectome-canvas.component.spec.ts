@@ -88,7 +88,8 @@ describe('ConnectomeCanvasComponent', () => {
 
     rendererSpy = jasmine.createSpyObj<ConnectomeRenderer>('ConnectomeRenderer', [
       'init',
-      'setData',
+      'setScene',
+      'markSceneDirty',
       'draw',
       'dispose',
     ]);
@@ -106,7 +107,7 @@ describe('ConnectomeCanvasComponent', () => {
     expect(fixture.componentInstance).toBeTruthy();
     fixture.detectChanges();
     expect(rendererSpy.init).toHaveBeenCalled();
-    expect(rendererSpy.setData).toHaveBeenCalled();
+    expect(rendererSpy.setScene).toHaveBeenCalled();
   });
 
   it('schedules a frame on requestRender', () => {

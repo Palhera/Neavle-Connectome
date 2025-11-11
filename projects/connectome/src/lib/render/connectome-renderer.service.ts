@@ -65,6 +65,10 @@ export class ConnectomeRenderer {
     this._needsUpload = true;
   }
 
+  markSceneDirty(): void {
+    this._needsUpload = true;
+  }
+
   setData(data?: ConnectomeData): void {
     this.data = data;
     if (!data) {
@@ -291,7 +295,7 @@ export class ConnectomeRenderer {
       const base = i * this.NODE_INSTANCE_WORDS;
       floats[base] = node.x;
       floats[base + 1] = node.y;
-      floats[base + 2] = this.dimensionality === 3 ? node.z ?? 0 : 0;
+      floats[base + 2] = this.dimensionality === 3 ? (node.z ?? 0) : 0;
       floats[base + 3] = node.size;
       uints[base + 4] = node.color >>> 0;
     }
@@ -369,10 +373,10 @@ export class ConnectomeRenderer {
       const targetNode = nodeLookup.get(link.target);
       const sx = sourceNode?.x ?? 0;
       const sy = sourceNode?.y ?? 0;
-      const sz = this.dimensionality === 3 ? sourceNode?.z ?? 0 : 0;
+      const sz = this.dimensionality === 3 ? (sourceNode?.z ?? 0) : 0;
       const tx = targetNode?.x ?? 0;
       const ty = targetNode?.y ?? 0;
-      const tz = this.dimensionality === 3 ? targetNode?.z ?? 0 : 0;
+      const tz = this.dimensionality === 3 ? (targetNode?.z ?? 0) : 0;
       const base = i * this.LINK_INSTANCE_WORDS;
       floats[base] = sx;
       floats[base + 1] = sy;

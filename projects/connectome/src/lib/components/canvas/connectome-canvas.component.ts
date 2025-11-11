@@ -20,6 +20,7 @@ import { Camera2D } from '../../view/camera-2d';
 import { Camera3D } from '../../view/camera-3d';
 import { Controls2D } from '../../view/controls-2d';
 import { Controls3D } from '../../view/controls-3d';
+import { ConnectomeScene } from '../../scene/connectome-scene';
 
 type Vec4 = [number, number, number, number];
 
@@ -112,6 +113,7 @@ export class ConnectomeCanvasComponent implements AfterViewInit, OnChanges, OnDe
   private _camera3d: Camera3D | null = null;
   private _controls2d: Controls2D | null = null;
   private _controls3d: Controls3D | null = null;
+  private _scene: ConnectomeScene | null = null;
 
   private _canvasWidth = 0;
   private _canvasHeight = 0;
@@ -162,6 +164,7 @@ export class ConnectomeCanvasComponent implements AfterViewInit, OnChanges, OnDe
     this.disconnectResizeObserver();
     this.detachInputListeners();
     this.renderer.dispose();
+    this._scene = null;
     this.removeContextListeners();
     this._gl = null;
   }
@@ -352,6 +355,13 @@ export class ConnectomeCanvasComponent implements AfterViewInit, OnChanges, OnDe
     this.requestRender();
   }
 
+  private ensureScene(): void {
+    if (!this._scene) {
+      this._scene = new ConnectomeScene();
+      this.renderer.setScene(this._scene);
+    }
+  }
+
   private pushDataToRenderer(force = false): void {
     if (!this._gl) {
       return;
@@ -359,8 +369,12 @@ export class ConnectomeCanvasComponent implements AfterViewInit, OnChanges, OnDe
     if (!this._pendingDataUpdate && !force) {
       return;
     }
-    const payload: ConnectomeData = this.data ?? { nodes: [] };
-    this.renderer.setData(payload);
+    this.ensureScene();
+    if (this._scene) {
+      const payload = this.data ?? { nodes: [], links: [] };
+      this._scene.update(payload);
+      this.renderer.markSceneDirty();
+    }
     this._pendingDataUpdate = false;
     this.requestRender();
   }
@@ -376,6 +390,10 @@ export class ConnectomeCanvasComponent implements AfterViewInit, OnChanges, OnDe
 
     const controls = this.activeControls;
     const animated = controls?.update(dt) ?? false;
+    const sceneChanged = this._scene?.animate(dt) ?? false;
+    if (sceneChanged) {
+      this.renderer.markSceneDirty();
+    }
 
     gl.viewport(0, 0, this._canvasWidth, this._canvasHeight);
     const bg = this.background;
@@ -386,7 +404,7 @@ export class ConnectomeCanvasComponent implements AfterViewInit, OnChanges, OnDe
     this.renderer.draw(this._viewMatrix4, this._projMatrix4);
     this.viewChanged.emit(this._viewChangePayload);
 
-    if (animated) {
+    if (animated || sceneChanged) {
       this.requestRender();
     }
   }
