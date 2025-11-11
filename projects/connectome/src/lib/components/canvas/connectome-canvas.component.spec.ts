@@ -123,6 +123,16 @@ describe('ConnectomeCanvasComponent', () => {
     expect(requestAnimationFrameSpy.calls.count()).toBe(initialCalls + 1);
     expect(cancelAnimationFrameSpy).not.toHaveBeenCalled();
   });
+
+  it('handles wheel input without errors', () => {
+    const fixture = TestBed.createComponent(ConnectomeCanvasComponent);
+    fixture.componentInstance.data = demoData();
+    fixture.detectChanges();
+    const canvas: HTMLCanvasElement = fixture.nativeElement.querySelector('canvas');
+    const event = new WheelEvent('wheel', { deltaY: 10, bubbles: true, cancelable: true });
+    canvas.dispatchEvent(event);
+    expect(rendererSpy.draw).toHaveBeenCalled();
+  });
 });
 
 function demoData(): ConnectomeData {
