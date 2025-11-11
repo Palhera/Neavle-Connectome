@@ -1,6 +1,7 @@
 import { ConnectomeData, ConnectomeLink, ConnectomeNode, Dimensionality } from './types';
 
-const hasNumber = (value: unknown): value is number => typeof value === 'number' && !Number.isNaN(value);
+const hasNumber = (value: unknown): value is number =>
+  typeof value === 'number' && !Number.isNaN(value);
 const hasString = (value: unknown): value is string => typeof value === 'string';
 const hasId = (value: unknown): value is string | number => hasString(value) || hasNumber(value);
 

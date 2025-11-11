@@ -20,7 +20,11 @@ export function check(gl: WebGL2RenderingContext, obj: WebGLShader | WebGLProgra
   throw new Error('Unknown WebGL object');
 }
 
-export function compileProgram(gl: WebGL2RenderingContext, vsSource: string, fsSource: string): WebGLProgram {
+export function compileProgram(
+  gl: WebGL2RenderingContext,
+  vsSource: string,
+  fsSource: string,
+): WebGLProgram {
   const vertexShader = compileShader(gl, gl.VERTEX_SHADER, vsSource);
   const fragmentShader = compileShader(gl, gl.FRAGMENT_SHADER, fsSource);
   const program = gl.createProgram();

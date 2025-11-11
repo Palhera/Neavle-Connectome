@@ -43,10 +43,22 @@ describe('ConnectomeRenderer', () => {
       links: [],
     });
     const identity = new Float32Array([
-      1, 0, 0, 0, //
-      0, 1, 0, 0, //
-      0, 0, 1, 0, //
-      0, 0, 0, 1,
+      1,
+      0,
+      0,
+      0, //
+      0,
+      1,
+      0,
+      0, //
+      0,
+      0,
+      1,
+      0, //
+      0,
+      0,
+      0,
+      1,
     ]);
     expect(() => service.draw(identity, identity)).not.toThrow();
   });
@@ -92,11 +104,11 @@ function createFakeGl(): WebGL2RenderingContext {
   gl.deleteProgram = () => {};
   gl.isProgram = (obj: WebGLProgram) => programs.has(obj);
 
-  gl.createVertexArray = () => ({} as WebGLVertexArrayObject);
+  gl.createVertexArray = () => ({}) as WebGLVertexArrayObject;
   gl.bindVertexArray = () => {};
   gl.deleteVertexArray = () => {};
 
-  gl.createBuffer = () => ({} as WebGLBuffer);
+  gl.createBuffer = () => ({}) as WebGLBuffer;
   gl.bindBuffer = () => {};
   gl.deleteBuffer = () => {};
   gl.bufferData = () => {};
@@ -108,7 +120,7 @@ function createFakeGl(): WebGL2RenderingContext {
 
   gl.useProgram = () => {};
   gl.uniformMatrix4fv = () => {};
-  gl.getUniformLocation = () => ({} as WebGLUniformLocation);
+  gl.getUniformLocation = () => ({}) as WebGLUniformLocation;
 
   gl.drawArraysInstanced = () => {};
   gl.clear = () => {};

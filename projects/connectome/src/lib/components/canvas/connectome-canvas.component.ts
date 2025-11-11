@@ -19,10 +19,22 @@ type Vec4 = [number, number, number, number];
 
 const createIdentity = (): Float32Array =>
   new Float32Array([
-    1, 0, 0, 0, //
-    0, 1, 0, 0, //
-    0, 0, 1, 0, //
-    0, 0, 0, 1,
+    1,
+    0,
+    0,
+    0, //
+    0,
+    1,
+    0,
+    0, //
+    0,
+    0,
+    1,
+    0, //
+    0,
+    0,
+    0,
+    1,
   ]);
 
 @Component({

@@ -108,12 +108,18 @@ export class ConnectomeRenderer {
 
   private createNodePipeline(gl: WebGL2RenderingContext): void {
     const quadCorners = new Float32Array([
-      -0.5, -0.5, //
-      0.5, -0.5, //
-      -0.5, 0.5, //
-      -0.5, 0.5, //
-      0.5, -0.5, //
-      0.5, 0.5,
+      -0.5,
+      -0.5, //
+      0.5,
+      -0.5, //
+      -0.5,
+      0.5, //
+      -0.5,
+      0.5, //
+      0.5,
+      -0.5, //
+      0.5,
+      0.5,
     ]);
 
     this.nodeVao = gl.createVertexArray();
@@ -198,7 +204,7 @@ export class ConnectomeRenderer {
       const base = i * this.NODE_INSTANCE_WORDS;
       floats[base] = node.x;
       floats[base + 1] = node.y;
-      floats[base + 2] = this.dimensionality === 3 ? node.z ?? 0 : 0;
+      floats[base + 2] = this.dimensionality === 3 ? (node.z ?? 0) : 0;
       floats[base + 3] = node.size ?? 8;
       uints[base + 4] = normalizeColor(node.color, this.DEFAULT_NODE_COLOR);
     }
@@ -233,10 +239,10 @@ export class ConnectomeRenderer {
       const base = i * this.LINK_INSTANCE_WORDS;
       const sx = sourceNode?.x ?? 0;
       const sy = sourceNode?.y ?? 0;
-      const sz = this.dimensionality === 3 ? sourceNode?.z ?? 0 : 0;
+      const sz = this.dimensionality === 3 ? (sourceNode?.z ?? 0) : 0;
       const tx = targetNode?.x ?? 0;
       const ty = targetNode?.y ?? 0;
-      const tz = this.dimensionality === 3 ? targetNode?.z ?? 0 : 0;
+      const tz = this.dimensionality === 3 ? (targetNode?.z ?? 0) : 0;
       floats[base] = sx;
       floats[base + 1] = sy;
       floats[base + 2] = sz;
